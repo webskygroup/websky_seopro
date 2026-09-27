@@ -4,11 +4,13 @@ namespace Opencart\Catalog\Controller\Extension\WebskySeo\Startup;
 use Opencart\System\Library\Extension\WebskySeo\Repository;
 use Opencart\System\Library\Extension\WebskySeo\Settings;
 use Opencart\System\Library\Extension\WebskySeo\Text;
+use Opencart\System\Library\Extension\WebskySeo\Urls;
 
 class Seo extends \Opencart\System\Engine\Controller {
     public function index(): void {
         $settings = Settings::read($this->config);
         if (!$settings['status']) return;
+        if ($settings['urls'] && $this->config->get('config_seo_url')) $this->registry->set('url', new Urls($this->registry, new Repository($this->db), $settings, $this->url));
         $this->handleRedirect($settings);
         $this->event->register('view/common/header/after', new \Opencart\System\Engine\Action('extension/websky_seo/startup/seo.head'), 100);
         $this->event->register('view/product/product/after', new \Opencart\System\Engine\Action('extension/websky_seo/startup/seo.productSchema'), 100);

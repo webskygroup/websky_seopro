@@ -3,7 +3,7 @@ namespace Opencart\System\Library\Extension\WebskySeo;
 
 final class Settings {
     public static function defaults(): array {
-        return ['status'=>0, 'urls'=>0, 'language_prefix'=>1, 'trailing_slash'=>0, 'canonical'=>1,
+        return ['status'=>0, 'urls'=>1, 'language_prefix'=>1, 'trailing_slash'=>0, 'canonical'=>1,
             'hreflang'=>1, 'schema'=>1, 'social'=>1, 'pagination'=>1, 'sitemap'=>1, 'instant'=>0,
             'log_404'=>1, 'log_bots'=>0, 'smart_redirect'=>0, 'internal_links'=>0, 'product_h2'=>0,
             'store_links'=>0, 'trim_title'=>65, 'trim_description'=>165, 'ai_model'=>'gpt-4.1-mini',
