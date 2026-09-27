@@ -1,6 +1,7 @@
 {
   "name": "Websky Professional SEO",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Websky",
-  "link": "https://mosallaseatash.ir/"
+  "link": "https://github.com/webskygroup/websky_seopro",
+  "description": "Professional multilingual SEO, AI content generation, schema, redirects, sitemap and audit tools for OpenCart 4"
 }

@@ -1,11 +1,9 @@
 <?php
-
-$_['heading_title'] = 'Websky Professional SEO';
-$_['text_extension'] = 'Extensions';
-$_['text_success'] = 'Success: Websky Professional SEO settings were saved.';
-$_['text_edit'] = 'Professional SEO settings';
-$_['text_features'] = 'Dynamic XML sitemap and Product JSON-LD structured data';
-$_['text_sitemap'] = 'Sitemap URL';
-$_['text_version'] = 'Version';
-$_['entry_status'] = 'Status';
-$_['error_permission'] = 'Warning: You do not have permission to modify Websky Professional SEO.';
+$_['heading_title'] = 'Websky SEO Pro';
+$_['text_extension'] = 'Extensions'; $_['text_home'] = 'Home'; $_['text_edit'] = 'SEO control center'; $_['text_success'] = 'SEO settings saved.';
+$_['text_features'] = 'AI assisted SEO fields, multilingual URLs, canonical and hreflang tags, JSON-LD, sitemap, redirects, audit, internal links and safe batch generation.';
+$_['text_settings'] = 'Site settings'; $_['text_ai'] = 'AI assistant'; $_['text_editor'] = 'SEO editor'; $_['text_generator'] = 'Generators and audit'; $_['text_redirects'] = 'Redirect manager'; $_['text_links'] = 'Internal links'; $_['text_reports'] = 'Reports'; $_['text_save'] = 'Save'; $_['text_generate'] = 'Generate missing fields'; $_['text_generate_ai'] = 'Generate with OpenAI'; $_['text_load'] = 'Load record'; $_['text_save_record'] = 'Save record'; $_['text_clear'] = 'Clear fields'; $_['text_audit'] = 'Run audit'; $_['text_sitemap'] = 'Sitemap'; $_['text_robots'] = 'Robots'; $_['text_version'] = 'Version';
+$_['text_api_key_help'] = 'The key stays on the server and is never sent to the browser.'; $_['text_openai_help'] = 'Uses the server-side OpenAI Responses API with store=false and a daily request limit.';
+$_['entry_status'] = 'Status'; $_['entry_store'] = 'Store'; $_['entry_language'] = 'Language'; $_['entry_type'] = 'Content type'; $_['entry_entity_id'] = 'Record ID'; $_['entry_api_key'] = 'OpenAI API key'; $_['entry_model'] = 'Model'; $_['entry_daily_limit'] = 'Daily AI limit'; $_['entry_instructions'] = 'Additional AI instructions'; $_['entry_title_template'] = 'Title template'; $_['entry_description_template'] = 'Description template'; $_['entry_h1_template'] = 'H1 template'; $_['entry_h2_template'] = 'H2 template'; $_['entry_alt_template'] = 'Image ALT template'; $_['entry_image_title_template'] = 'Image title template'; $_['entry_keyword_template'] = 'Keyword template'; $_['entry_robots'] = 'Default robots'; $_['entry_source'] = 'Old path'; $_['entry_target'] = 'New path'; $_['entry_code'] = 'HTTP code'; $_['entry_word'] = 'Keyword'; $_['entry_link'] = 'Link'; $_['entry_tooltip'] = 'Tooltip';
+$_['field_meta_title'] = 'Meta title'; $_['field_meta_description'] = 'Meta description'; $_['field_meta_keyword'] = 'Meta keywords'; $_['field_tag'] = 'Product tags'; $_['field_h1'] = 'Custom H1'; $_['field_h2'] = 'Custom H2'; $_['field_image_alt'] = 'Image ALT'; $_['field_image_title'] = 'Image title'; $_['field_robots'] = 'Robots tag'; $_['field_description'] = 'SEO description'; $_['field_keyword'] = 'SEO URL';
+$_['error_permission'] = 'You do not have permission to modify Websky SEO Pro.';

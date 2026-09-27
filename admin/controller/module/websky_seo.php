@@ -1,81 +1,35 @@
 <?php
-
 namespace Opencart\Admin\Controller\Extension\WebskySeo\Module;
 
+use Opencart\System\Library\Extension\WebskySeo\AI;
+use Opencart\System\Library\Extension\WebskySeo\Repository;
+use Opencart\System\Library\Extension\WebskySeo\Settings;
+use Opencart\System\Library\Extension\WebskySeo\Text;
+
 class WebskySeo extends \Opencart\System\Engine\Controller {
+    private const VERSION = '2.0.0';
+    private function repo(): Repository { return new Repository($this->db); }
+    private function token(): string { return 'user_token=' . $this->session->data['user_token']; }
+    private function settings(): array { return Settings::read($this->config); }
+    private function allowed(): bool { return $this->user->hasPermission('modify', 'extension/websky_seo/module/websky_seo'); }
+    private function body(): array { $raw=file_get_contents('php://input'); $data=$raw?json_decode($raw,true):null; return is_array($data)?$data:$this->request->post; }
+    private function json(array $data,int $status=200): void { $this->response->addHeader('Content-Type: application/json; charset=utf-8'); if($status!==200)$this->response->addHeader('HTTP/1.1 '.$status);$this->response->setOutput(json_encode($data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)); }
+    private function scope(): array { $r=$this->repo();$stores=$r->stores();$langs=$r->languages();$store=(int)($this->request->get['store_id']??$this->request->post['store_id']??$this->config->get('config_store_id'));$lang=(int)($this->request->get['language_id']??$this->request->post['language_id']??$this->config->get('config_language_id'));if(!array_filter($stores,fn($s)=>(int)$s['store_id']===$store))$store=0;if(!array_filter($langs,fn($l)=>(int)$l['language_id']===$lang))$lang=(int)$this->config->get('config_language_id');return[$store,$lang,$stores,$langs];}
     public function index(): void {
-        $this->load->language('extension/websky_seo/module/websky_seo');
-        $this->document->setTitle($this->language->get('heading_title'));
-
-        $data['breadcrumbs'] = [];
-        $data['breadcrumbs'][] = [
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
-        ];
-        $data['breadcrumbs'][] = [
-            'text' => $this->language->get('text_extension'),
-            'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module')
-        ];
-        $data['breadcrumbs'][] = [
-            'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/websky_seo/module/websky_seo', 'user_token=' . $this->session->data['user_token'])
-        ];
-
-        $data['save'] = $this->url->link('extension/websky_seo/module/websky_seo.save', 'user_token=' . $this->session->data['user_token']);
-        $data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module');
-        $data['status'] = (bool)$this->config->get('module_websky_seo_status');
-        $data['sitemap'] = rtrim(HTTP_CATALOG, '/') . '/sitemap.xml';
-        $data['version'] = '1.0.0';
-
-        $data['header'] = $this->load->controller('common/header');
-        $data['column_left'] = $this->load->controller('common/column_left');
-        $data['footer'] = $this->load->controller('common/footer');
-
-        $this->response->setOutput($this->load->view('extension/websky_seo/module/websky_seo', $data));
+        $this->load->language('extension/websky_seo/module/websky_seo');[$store,$lang,$stores,$langs]=$this->scope();$r=$this->repo();$s=$this->settings();$this->document->setTitle($this->language->get('heading_title'));
+        $data=['heading_title'=>$this->language->get('heading_title'),'text_extension'=>$this->language->get('text_extension'),'text_home'=>$this->language->get('text_home'),'text_edit'=>$this->language->get('text_edit'),'button_save'=>$this->language->get('button_save'),'button_back'=>$this->language->get('button_back'),'version'=>self::VERSION,'settings'=>$s,'stores'=>$stores,'languages'=>$langs,'selected_store'=>$store,'selected_language'=>$lang,'selected_entity_id'=>(int)($this->request->get['entity_id']??1),'sitemap'=>rtrim(HTTP_CATALOG,'/').'/sitemap.xml','robots'=>rtrim(HTTP_CATALOG,'/').'/robots.txt','save'=>$this->url->link('extension/websky_seo/module/websky_seo.save',$this->token()),'entity'=>$this->url->link('extension/websky_seo/module/websky_seo.entity',$this->token()),'ai'=>$this->url->link('extension/websky_seo/module/websky_seo.ai',$this->token()),'generate'=>$this->url->link('extension/websky_seo/module/websky_seo.generate',$this->token()),'audit'=>$this->url->link('extension/websky_seo/module/websky_seo.audit',$this->token()),'entity_save'=>$this->url->link('extension/websky_seo/module/websky_seo.entitySave',$this->token()),'clear'=>$this->url->link('extension/websky_seo/module/websky_seo.clear',$this->token()),'redirect_save'=>$this->url->link('extension/websky_seo/module/websky_seo.redirectSave',$this->token()),'link_save'=>$this->url->link('extension/websky_seo/module/websky_seo.linkSave',$this->token()),'redirects'=>$r->redirects($store),'reports'=>$r->reports($store,$lang),'types'=>Repository::TYPES];
+        $data['breadcrumbs']=[['text'=>$this->language->get('text_home'),'href'=>$this->url->link('common/dashboard',$this->token())],['text'=>$this->language->get('text_extension'),'href'=>$this->url->link('marketplace/extension',$this->token().'&type=module')],['text'=>$this->language->get('heading_title'),'href'=>$this->url->link('extension/websky_seo/module/websky_seo',$this->token())]];$data['header']=$this->load->controller('common/header');$data['column_left']=$this->load->controller('common/column_left');$data['footer']=$this->load->controller('common/footer');$this->response->setOutput($this->load->view('extension/websky_seo/module/websky_seo',$data));
     }
-
-    public function save(): void {
-        $this->load->language('extension/websky_seo/module/websky_seo');
-        $json = [];
-
-        if (!$this->user->hasPermission('modify', 'extension/websky_seo/module/websky_seo')) {
-            $json['error'] = $this->language->get('error_permission');
-        }
-
-        if (!$json) {
-            $this->load->model('setting/setting');
-            $this->model_setting_setting->editSetting('module_websky_seo', [
-                'module_websky_seo_status' => (int)($this->request->post['module_websky_seo_status'] ?? 0)
-            ]);
-            $json['success'] = $this->language->get('text_success');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
-    }
-
-    public function install(): void {
-        $this->load->model('setting/startup');
-        $this->model_setting_startup->deleteStartupByCode('websky_seo_catalog');
-        $this->model_setting_startup->addStartup([
-            'code' => 'websky_seo_catalog',
-            'action' => 'catalog/extension/websky_seo/startup/seo',
-            'status' => 1,
-            'sort_order' => 6
-        ]);
-
-        $this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'route' AND `value` = 'extension/websky_seo/feed/sitemap'");
-        $this->db->query("INSERT INTO `" . DB_PREFIX . "seo_url` SET `store_id` = 0, `language_id` = " . (int)$this->config->get('config_language_id') . ", `key` = 'route', `value` = 'extension/websky_seo/feed/sitemap', `keyword` = 'sitemap.xml', `sort_order` = -1");
-
-        $this->load->model('setting/setting');
-        $this->model_setting_setting->editSetting('module_websky_seo', ['module_websky_seo_status' => 1]);
-    }
-
-    public function uninstall(): void {
-        $this->load->model('setting/startup');
-        $this->model_setting_startup->deleteStartupByCode('websky_seo_catalog');
-        $this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'route' AND `value` = 'extension/websky_seo/feed/sitemap'");
-        $this->load->model('setting/setting');
-        $this->model_setting_setting->deleteSetting('module_websky_seo');
-    }
+    public function save(): void { $this->load->language('extension/websky_seo/module/websky_seo');if(!$this->allowed()){$this->json(['error'=>$this->language->get('error_permission')],403);return;}try{$in=$this->body();$in=array_replace($this->settings(),$in);$save=[];foreach(Settings::validate($in) as $k=>$v)$save['module_websky_seo_'.$k]=$v;if(!empty($in['module_websky_seo_ai_api_key']))$save['module_websky_seo_ai_api_key']=trim((string)$in['module_websky_seo_ai_api_key']);$this->load->model('setting/setting');$this->model_setting_setting->editSetting('module_websky_seo',$save);$this->json(['success'=>$this->language->get('text_success')]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function entity(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{[$store,$lang]=$this->scope();$row=$this->repo()->entity((string)($this->request->get['type']??'product'),(int)($this->request->get['entity_id']??0),$store,$lang);if(!$row)throw new \InvalidArgumentException('Entity not found.');$this->json(['success'=>true,'entity'=>$row]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function ai(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store,$lang]=$this->scope();$r=$this->repo();$type=(string)($in['type']??'product');$id=(int)($in['entity_id']??0);$entity=$r->entity($type,$id,$store,$lang);if(!$entity)throw new \InvalidArgumentException('Entity not found.');$s=$this->settings();$usage=$r->reserveAi($store,(int)$this->user->getId(),$s['ai_model'],$s['ai_daily_limit']);try{$out=(new AI((string)$this->config->get('module_websky_seo_ai_api_key'),'https://api.openai.com/v1/responses',$s['ai_model']))->generate($r->context($entity,$store,$lang),$s['ai_instructions']);$r->finishAi($usage,'success',$out['tokens']);$this->json(['success'=>true,'data'=>$out['data'],'tokens'=>$out['tokens'],'etag'=>$entity['etag']]);}catch(\Throwable $e){$r->finishAi($usage,'error',0);throw $e;}}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function entitySave(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store,$lang]=$this->scope();$r=$this->repo();$type=(string)($in['type']??'');$id=(int)($in['entity_id']??0);$fields=is_array($in['fields']??null)?$in['fields']:$in;$history=$r->save($type,$id,$store,$lang,$fields,(string)($in['etag']??''),(int)$this->user->getId());$this->json(['success'=>true,'history_id'=>$history,'entity'=>$r->entity($type,$id,$store,$lang)]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function generate(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store,$lang]=$this->scope();$r=$this->repo();$s=$this->settings();$type=(string)($in['type']??'product');$after=(int)($in['after']??0);$limit=max(1,min(100,(int)($in['limit']??25)));$items=$r->listing($type,$store,$lang,$after,$limit,(string)($in['search']??''));$changed=0;foreach($items as $e){$ctx=$r->context($e,$store,$lang);$map=['meta_title'=>'title_template','meta_description'=>'description_template','h1'=>'h1_template','h2'=>'h2_template','image_alt'=>'image_alt_template','image_title'=>'image_title_template','meta_keyword'=>'keyword_template'];$patch=[];foreach($map as $f=>$t)if(empty($e[$f]))$patch[$f]=Text::trim(Text::render($s[$t],$ctx),$f==='meta_title'?$s['trim_title']:($f==='meta_description'?$s['trim_description']:255));if(empty($e['keyword']))$patch['keyword']=$r->uniqueSlug($ctx['name']??$type.'-'.$e['entity_id'],$type,(int)$e['entity_id'],$store,$lang);if(empty($e['tag']))$patch['tag']=Text::keywords(($ctx['name']??'').' '.($ctx['description']??''));if($patch){$r->save($type,(int)$e['entity_id'],$store,$lang,$patch,$e['etag'],(int)$this->user->getId());$changed++;}$after=(int)$e['entity_id'];}$this->json(['success'=>true,'changed'=>$changed,'next'=>$items?$after:0,'has_more'=>count($items)===$limit]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function clear(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store,$lang]=$this->scope();$r=$this->repo();$type=(string)$in['type'];$id=(int)$in['entity_id'];$e=$r->entity($type,$id,$store,$lang);$fields=$in['fields']??Text::FIELDS;$patch=[];foreach($fields as $f)$patch[$f]='';$r->save($type,$id,$store,$lang,$patch,$e['etag'],(int)$this->user->getId());$this->json(['success'=>true,'entity'=>$r->entity($type,$id,$store,$lang)]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function audit(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{[$store,$lang]=$this->scope();$r=$this->repo();$items=$r->listing((string)($this->request->get['type']??'product'),$store,$lang,0,1000);$scores=array_map(fn($e)=>$e['audit']['score'],$items);$issues=[];foreach($items as $e)foreach($e['audit']['issues'] as $i)$issues[$i]=($issues[$i]??0)+1;$this->json(['success'=>true,'total'=>count($items),'average'=>count($scores)?round(array_sum($scores)/count($scores),1):100,'issues'=>$issues]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function redirectSave(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store]=$this->scope();$this->repo()->addRedirect($store,(string)$in['source'],(string)$in['target'],(int)($in['code']??301));$this->json(['success'=>true]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function linkSave(): void { if(!$this->allowed()){$this->json(['error'=>'Permission denied.'],403);return;}try{$in=$this->body();[$store,$lang]=$this->scope();$this->repo()->addLink($store,$lang,(string)$in['keyword'],(string)$in['target'],(string)($in['tooltip']??''));$this->json(['success'=>true]);}catch(\Throwable $e){$this->json(['error'=>$e->getMessage()],422);}}
+    public function install(): void { $this->repo()->install();$this->load->model('setting/startup');$this->model_setting_startup->deleteStartupByCode('websky_seo_catalog');$this->model_setting_startup->addStartup(['code'=>'websky_seo_catalog','description'=>'Websky SEO Pro','action'=>'catalog/extension/websky_seo/startup/seo','status'=>1,'sort_order'=>6]);$this->load->model('setting/event');$event=['code'=>'websky_seo_admin_product','description'=>'Websky SEO product assistant','trigger'=>'admin/view/catalog/product_form/after','action'=>'extension/websky_seo/event/seo.adminProductForm','status'=>1,'sort_order'=>10];$this->model_setting_event->deleteEventByCode($event['code']);$this->model_setting_event->addEvent($event);$this->load->model('setting/setting');$save=[];foreach(Settings::defaults() as $k=>$v)$save['module_websky_seo_'.$k]=$v;$save['module_websky_seo_status']=1;$this->model_setting_setting->editSetting('module_websky_seo',$save);$this->db->query("DELETE FROM `".DB_PREFIX."seo_url` WHERE `key`='route' AND `value` IN ('extension/websky_seo/feed/sitemap','extension/websky_seo/feed/robots')");$this->db->query("INSERT INTO `".DB_PREFIX."seo_url` SET store_id=0,language_id=".(int)$this->config->get('config_language_id').",`key`='route',`value`='extension/websky_seo/feed/sitemap',keyword='sitemap.xml',sort_order=-1");$this->db->query("INSERT INTO `".DB_PREFIX."seo_url` SET store_id=0,language_id=".(int)$this->config->get('config_language_id').",`key`='route',`value`='extension/websky_seo/feed/robots',keyword='robots.txt',sort_order=-1");$this->seedFriendlyRoutes();}
+    private function seedFriendlyRoutes(): void { $routes=['account/login'=>'login','account/register'=>'register','account/forgotten'=>'forgotten-password','information/contact'=>'contact','information/sitemap'=>'site-map','product/special'=>'specials'];$languages=$this->repo()->languages();foreach($languages as $language)foreach($routes as $route=>$keyword){$this->db->query("INSERT IGNORE INTO `".DB_PREFIX."seo_url` SET store_id=0,language_id=".(int)$language['language_id'].",`key`='route',`value`='".$this->db->escape($route)."',keyword='".$this->db->escape($keyword)."',sort_order=0");}}
+    public function uninstall(): void { $this->load->model('setting/startup');$this->model_setting_startup->deleteStartupByCode('websky_seo_catalog');$this->load->model('setting/event');$this->model_setting_event->deleteEventByCode('websky_seo_admin_product');foreach(['wsseo_meta','wsseo_history','wsseo_redirect','wsseo_link','wsseo_log','wsseo_ai_usage'] as $t)$this->db->query('DROP TABLE IF EXISTS `'.DB_PREFIX.$t.'`');$this->load->model('setting/setting');$this->model_setting_setting->deleteSetting('module_websky_seo');$this->db->query("DELETE FROM `".DB_PREFIX."seo_url` WHERE `value` IN ('extension/websky_seo/feed/sitemap','extension/websky_seo/feed/robots')");}
 }

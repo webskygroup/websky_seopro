@@ -1,11 +1,7 @@
 <?php
-
-$_['heading_title'] = 'سئوی حرفه‌ای وب‌اسکای';
-$_['text_extension'] = 'افزونه‌ها';
-$_['text_success'] = 'تنظیمات سئوی حرفه‌ای وب‌اسکای ذخیره شد.';
-$_['text_edit'] = 'تنظیمات سئوی حرفه‌ای';
-$_['text_features'] = 'نقشه سایت XML پویا و داده ساختاریافته Product JSON-LD';
-$_['text_sitemap'] = 'آدرس نقشه سایت';
-$_['text_version'] = 'نسخه';
-$_['entry_status'] = 'وضعیت';
-$_['error_permission'] = 'شما اجازه تغییر تنظیمات سئوی حرفه‌ای وب‌اسکای را ندارید.';
+$_['heading_title'] = 'سئوی حرفه‌ای وب‌اسکای'; $_['text_extension'] = 'افزونه‌ها'; $_['text_home'] = 'خانه'; $_['text_edit'] = 'مرکز کنترل سئو'; $_['text_success'] = 'تنظیمات سئو ذخیره شد.';
+$_['text_features'] = 'تولید هوشمند فیلدهای سئو، چندزبانه، نشانی‌های یکتا، canonical و hreflang، داده ساختاریافته، نقشه سایت، ریدایرکت، گزارش و لینک‌سازی داخلی.';
+$_['text_settings'] = 'تنظیمات سایت'; $_['text_ai'] = 'دستیار هوش مصنوعی'; $_['text_editor'] = 'ویرایشگر سئو'; $_['text_generator'] = 'تولیدکننده و گزارش'; $_['text_redirects'] = 'مدیریت ریدایرکت'; $_['text_links'] = 'لینک داخلی'; $_['text_reports'] = 'گزارش‌ها'; $_['text_save'] = 'ذخیره'; $_['text_generate'] = 'تولید فیلدهای خالی'; $_['text_generate_ai'] = 'تولید با OpenAI'; $_['text_load'] = 'بارگذاری رکورد'; $_['text_save_record'] = 'ذخیره رکورد'; $_['text_clear'] = 'پاک‌سازی فیلدها'; $_['text_audit'] = 'اجرای گزارش'; $_['text_sitemap'] = 'نقشه سایت'; $_['text_robots'] = 'ربات‌ها'; $_['text_version'] = 'نسخه';
+$_['text_api_key_help'] = 'کلید فقط روی سرور نگهداری می‌شود و به مرورگر ارسال نمی‌شود.'; $_['text_openai_help'] = 'از Responses API سمت سرور با store=false و سقف روزانه استفاده می‌کند.';
+$_['entry_status'] = 'وضعیت'; $_['entry_store'] = 'فروشگاه'; $_['entry_language'] = 'زبان'; $_['entry_type'] = 'نوع محتوا'; $_['entry_entity_id'] = 'شناسه رکورد'; $_['entry_api_key'] = 'کلید OpenAI'; $_['entry_model'] = 'مدل'; $_['entry_daily_limit'] = 'سقف روزانه هوش مصنوعی'; $_['entry_instructions'] = 'دستور تکمیلی هوش مصنوعی'; $_['entry_title_template'] = 'الگوی عنوان'; $_['entry_description_template'] = 'الگوی توضیح'; $_['entry_h1_template'] = 'الگوی H1'; $_['entry_h2_template'] = 'الگوی H2'; $_['entry_alt_template'] = 'الگوی ALT تصویر'; $_['entry_image_title_template'] = 'الگوی عنوان تصویر'; $_['entry_keyword_template'] = 'الگوی کلمات کلیدی'; $_['entry_robots'] = 'ربات‌ها'; $_['entry_source'] = 'مسیر قدیمی'; $_['entry_target'] = 'مسیر جدید'; $_['entry_code'] = 'کد HTTP'; $_['entry_word'] = 'کلمه'; $_['entry_link'] = 'لینک'; $_['entry_tooltip'] = 'توضیح شناور';
+$_['field_meta_title'] = 'عنوان متا'; $_['field_meta_description'] = 'توضیح متا'; $_['field_meta_keyword'] = 'کلمات کلیدی'; $_['field_tag'] = 'برچسب محصول'; $_['field_h1'] = 'H1 اختصاصی'; $_['field_h2'] = 'H2 اختصاصی'; $_['field_image_alt'] = 'ALT تصویر'; $_['field_image_title'] = 'عنوان تصویر'; $_['field_robots'] = 'تگ ربات'; $_['field_description'] = 'توضیح سئو'; $_['field_keyword'] = 'نشانی سئو'; $_['error_permission'] = 'اجازهٔ تغییر سئوی حرفه‌ای وب‌اسکای را ندارید.';
