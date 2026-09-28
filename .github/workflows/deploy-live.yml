@@ -15,13 +15,20 @@ jobs:
           cp -R admin catalog system dist/live/
           cp install.json dist/live/
       - name: Upload extension files to live OpenCart
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
-        with:
-          server: ${{ secrets.LIVE_FTP_SERVER }}
-          username: ${{ secrets.LIVE_FTP_USERNAME }}
-          password: ${{ secrets.LIVE_FTP_PASSWORD }}
-          port: 21
-          protocol: ftp
-          local-dir: dist/live/
-          server-dir: /public_html/extension/websky_seo/
-          dangerous-clean-slate: false
+        shell: bash
+        env:
+          FTP_SERVER: ${{ secrets.LIVE_FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.LIVE_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.LIVE_FTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            relative="${file#dist/live/}"
+            echo "Uploading ${relative}"
+            curl --fail --silent --show-error --retry 3 --retry-all-errors \
+              --connect-timeout 20 --max-time 180 \
+              --ftp-method nocwd --ftp-pasv --ftp-skip-pasv-ip --ftp-create-dirs \
+              --user "${FTP_USERNAME}:${FTP_PASSWORD}" \
+              --upload-file "${file}" \
+              "ftp://${FTP_SERVER}/public_html/extension/websky_seo/${relative}"
+          done < <(find dist/live -type f | sort)
