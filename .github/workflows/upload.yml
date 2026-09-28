@@ -1,0 +1,48 @@
+name: Build OCMOD and upload official download
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build package
+        run: |
+          mkdir -p dist
+          zip -r dist/websky_seo.ocmod.zip admin catalog system install.json \
+            -x ".git/*" ".github/*" "dist/*" "*.ocmod.zip"
+      - name: Upload package to official download site
+        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: dist/
+          server-dir: /public_html/dl/
+      - name: Verify official download on tag
+        if: ${{ startsWith(github.ref, 'refs/tags/') && env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent --show-error --location --head "https://opencart-ir.com/dl/websky_seo.ocmod.zip"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "The SEO package is not publicly reachable at opencart-ir.com/dl"
+          exit 1
