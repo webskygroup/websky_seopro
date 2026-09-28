@@ -7,7 +7,7 @@ use Opencart\System\Library\Extension\WebskySeo\Settings;
 use Opencart\System\Library\Extension\WebskySeo\Text;
 
 class WebskySeo extends \Opencart\System\Engine\Controller {
-    private const VERSION = '2.0.0';
+    private const VERSION = '2.0.2';
     private function repo(): Repository { return new Repository($this->db); }
     private function token(): string { return 'user_token=' . $this->session->data['user_token']; }
     private function settings(): array { return Settings::read($this->config); }
