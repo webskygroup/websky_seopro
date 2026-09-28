@@ -22,7 +22,10 @@
 </div>
 <script>
 (function($){
-  const urls={entity:'{{ entity|raw }}',ai:'{{ ai|raw }}',save:'{{ entity_save|raw }}',clear:'{{ clear|raw }}',generate:'{{ generate|raw }}',audit:'{{ audit|raw }}',redirect:'{{ redirect_save|raw }}',link:'{{ link_save|raw }}'};
+  // OpenCart returns HTML-safe URLs with &amp; for server-rendered attributes.
+  // These values are consumed by JavaScript, so normalize them before every AJAX call.
+  function endpoint(url){return String(url).replace(/&amp;/g,'&');}
+  const urls={entity:endpoint('{{ entity|raw }}'),ai:endpoint('{{ ai|raw }}'),save:endpoint('{{ entity_save|raw }}'),clear:endpoint('{{ clear|raw }}'),generate:endpoint('{{ generate|raw }}'),audit:endpoint('{{ audit|raw }}'),redirect:endpoint('{{ redirect_save|raw }}'),link:endpoint('{{ link_save|raw }}')};
   const fields=['meta_title','meta_description','meta_keyword','tag','h1','h2','image_alt','image_title','robots','description','keyword'];
   let entity=null;
   function payload(extra){return Object.assign({store_id:$('#ws-store').val(),language_id:$('#ws-language').val(),type:$('#ws-type').val(),entity_id:$('#ws-id').val()},extra||{});}
