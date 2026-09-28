@@ -1,6 +1,39 @@
 {{ header }}{{ column_left }}
 <style>
 .wsseo{--ws:#2563eb;max-width:1500px}.wsseo .card{border:0;box-shadow:0 8px 30px rgba(15,23,42,.07);border-radius:14px}.wsseo .nav-tabs{gap:4px;border-bottom:0;margin-bottom:18px}.wsseo .nav-tabs .nav-link{border:0;border-radius:9px;font-weight:600}.wsseo .nav-tabs .nav-link.active{background:#e9f1ff;color:var(--ws)}.wsseo textarea{min-height:86px}.wsseo .metric{border-radius:12px;padding:16px;background:#f8fafc;border:1px solid #e8edf5}.wsseo .metric strong{display:block;font-size:1.35rem;color:#172033}.wsseo .table td,.wsseo .table th{vertical-align:middle}.wsseo[dir=rtl] .form-label{text-align:right}.wsseo .code{font-family:ui-monospace,Consolas,monospace;direction:ltr;text-align:left}
+/* Keep the SEO page inside the RTL admin content area when the side menu is visible. */
+#content.wsseo {
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  overflow-x: hidden;
+}
+#content.wsseo > .page-header > .container-fluid,
+#content.wsseo > .container-fluid {
+  width: 100%;
+  max-width: 1500px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 992px) {
+  #column-left + #content.wsseo,
+  #column-left.active + #content.wsseo {
+    right: 0;
+    margin-right: 235px;
+    margin-left: 0;
+  }
+}
+@media (max-width: 991.98px) {
+  #content.wsseo {
+    width: 100%;
+  }
+  #content.wsseo > .page-header > .container-fluid,
+  #content.wsseo > .container-fluid {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
 </style>
 <div id="content" class="wsseo">
   <div class="page-header"><div class="container-fluid"><div class="float-end"><button type="submit" form="wsseo-settings" class="btn btn-primary"><i class="fa-solid fa-save"></i> {{ text_save }}</button><a href="{{ back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i> {{ button_back }}</a></div><h1><i class="fa-solid fa-chart-line"></i> {{ heading_title }}</h1><ol class="breadcrumb">{% for breadcrumb in breadcrumbs %}<li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>{% endfor %}</ol></div></div>
