@@ -1,0 +1,27 @@
+name: Deploy Websky SEO Pro to live store
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Prepare extension files
+        run: |
+          mkdir -p dist/live
+          cp -R admin catalog system dist/live/
+          cp install.json dist/live/
+      - name: Upload extension files to live OpenCart
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.LIVE_FTP_SERVER }}
+          username: ${{ secrets.LIVE_FTP_USERNAME }}
+          password: ${{ secrets.LIVE_FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: dist/live/
+          server-dir: /public_html/extension/websky_seo/
+          dangerous-clean-slate: false
