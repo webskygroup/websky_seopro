@@ -34,6 +34,7 @@ jobs:
           protocol: ftp
           local-dir: dist/
           server-dir: /public_html/dl/
+          state-name: .ftp-deploy-sync-state-websky_seopro-upload-1.json
       - name: Verify official download on tag
         if: ${{ startsWith(github.ref, 'refs/tags/') && env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
         shell: bash
